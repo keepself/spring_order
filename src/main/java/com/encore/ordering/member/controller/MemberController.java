@@ -58,7 +58,6 @@ public class MemberController {
                 "Member Successfully Login", member_info), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')") // 관리자 권한만 조회 가능
     @GetMapping("/members")
     public ResponseEntity<ResponseDto> members(){
         List<MemberResponse> memberResponses = memberService.findAll();
