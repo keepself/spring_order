@@ -1,6 +1,7 @@
 package com.encore.ordering.member.domain;
 
 import com.encore.ordering.common.BaseTimeEntity;
+import com.encore.ordering.member.dto.request.CreateMemberRequest;
 import com.encore.ordering.order.domain.Ordering;
 import lombok.*;
 
@@ -36,4 +37,19 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member")
     private List<Ordering> orderings;
+
+    public static Member toEntity(CreateMemberRequest createMemberRequest){
+        Address address = Address.builder()
+                .city(createMemberRequest.getCity())
+                .street(createMemberRequest.getStreet())
+                .zipcode(createMemberRequest.getZipcode())
+                .build();
+        return Member.builder()
+                .name(createMemberRequest.getName())
+                .email(createMemberRequest.getEmail())
+                .password(createMemberRequest.getPassword())
+                .address(address)
+                .role(Role.ROLE_USER)
+                .build();
+    }
 }
