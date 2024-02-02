@@ -2,21 +2,45 @@ package com.encore.ordering.order.domain;
 
 import com.encore.ordering.common.BaseTimeEntity;
 import com.encore.ordering.member.domain.Member;
+import com.encore.ordering.order_item.domain.OrderItem;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-@Builder
+
 @Getter
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ordering extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
+
+
+    @OneToMany(mappedBy = "ordering", cascade = CascadeType.PERSIST)
+    private OrderStatus orderStatus = OrderStatus.ORDERED;
+
+    @CreationTimestamp
+    private LocalDateTime createdTime;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedTime;
+
+    @Builder
+    public  Ordering(Member member){
+        this.member = member;
+
+    }
+    public void cancelOrder(){
+        this.orderStatus = OrderStatus.CANCELED;
+    }
 }

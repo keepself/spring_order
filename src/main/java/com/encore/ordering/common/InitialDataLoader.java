@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class InitialDataLoader implements CommandLineRunner {
 
-    private final MemberRepository memberRepository;
+    private final MemberRepository  memberRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
