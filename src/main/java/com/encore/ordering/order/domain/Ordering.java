@@ -26,8 +26,12 @@ public class Ordering extends BaseTimeEntity {
     private Member member;
 
 
-    @OneToMany(mappedBy = "ordering", cascade = CascadeType.PERSIST)
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.ORDERED;
+
+    //persist 영속성 전이
+    @OneToMany(mappedBy = "ordering", cascade = CascadeType.PERSIST)
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     @CreationTimestamp
     private LocalDateTime createdTime;

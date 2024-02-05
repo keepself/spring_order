@@ -24,13 +24,13 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder){
+    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Member create(CreateMemberRequest createMemberRequest) throws IllegalArgumentException{
-        if (memberRepository.findByEmail(createMemberRequest.getEmail()).isPresent()){
+    public Member create(CreateMemberRequest createMemberRequest) throws IllegalArgumentException {
+        if (memberRepository.findByEmail(createMemberRequest.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 가입되어 있는 이메일입니다.");
         }
         createMemberRequest.setPassword(passwordEncoder.encode(createMemberRequest.getPassword()));
@@ -38,27 +38,29 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
-    public MemberResponse findMyInfo(){
+    public MemberResponse findMyInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Member findMember = memberRepository.findByEmail(authentication.getName())
                 .orElseThrow(EntityNotFoundException::new);
         return MemberResponse.from(findMember);
     }
 
-    public List<MemberResponse> findAll(){
+    public List<MemberResponse> findAll() {
         List<Member> members = memberRepository.findAll();
         return members.stream().map(MemberResponse::from).collect(Collectors.toList());
     }
 
-    public Member login(LoginRequest loginRequest) throws IllegalArgumentException{
+    public Member login(LoginRequest loginRequest) throws IllegalArgumentException {
         // Email 존재 여부 Check
         Member findMember = memberRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
 
         // Password 일치 여부 Check
-        if (!passwordEncoder.matches(loginRequest.getPassword(), findMember.getPassword())){
+        if (!passwordEncoder.matches(loginRequest.getPassword(), findMember.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         return findMember;
     }
 }
+
+

@@ -6,15 +6,14 @@ import com.encore.ordering.member.dto.request.CreateMemberRequest;
 import com.encore.ordering.member.dto.request.LoginRequest;
 import com.encore.ordering.member.dto.response.MemberResponse;
 import com.encore.ordering.member.service.MemberService;
+import com.encore.ordering.order.dto.OrderResponse;
+import com.encore.ordering.order.service.OrderService;
 import com.encore.ordering.securities.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -24,11 +23,13 @@ import java.util.Map;
 @RestController
 public class MemberController {
     private final MemberService memberService;
+    private final OrderService orderService;
     private final JwtProvider jwtProvider;
 
     @Autowired
-    public MemberController(MemberService memberService, JwtProvider jwtProvider){
+    public MemberController(MemberService memberService, OrderService orderService, JwtProvider jwtProvider){
         this.memberService = memberService;
+        this.orderService = orderService;
         this.jwtProvider = jwtProvider;
     }
 
@@ -40,10 +41,24 @@ public class MemberController {
     }
 
     // 특정 회원의 주문 내역 조회 (관리자 권한)
-//    @GetMapping("/member/{id}/orders")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/member/{id}/orders")
+    public List<OrderResponse> findMemberOrders(@PathVariable (value = "id") Long id){
+        return orderService.findByMember(id);
+
+    }
+
+    @GetMapping("/member/myorders")
+    public List<OrderResponse> findMyOrders(){
+
+        return orderService.findMyOrders();
+    }
 //
 //    // 내 주문 내역 조회
 //    @GetMapping("/member/myorders")
+
+
+
 
     @PostMapping("/doLogin")
     public ResponseEntity<CommonResponse> login(@Valid @RequestBody LoginRequest loginRequest){
